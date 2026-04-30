@@ -4,8 +4,7 @@ Tags: beaver-builder, audio, playlist, mp3, music
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Requires Plugins: beaver-builder-lite-version
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,17 +83,18 @@ Open an issue at the GitHub repository: [https://github.com/Dependent-Media/dm-a
 
 == Changelog ==
 
-= 2.0.1 =
+= 2.0.2 =
 * First public release on WordPress.org.
 * Renamed the plugin from "BB MP3 Player" to "Dependent Media Audio Playlist for Beaver Builder" to comply with WordPress.org Plugin Directory naming guidance (third-party plugins cannot use a brand name as a prefix in a way that implies official affiliation).
 * Updated the text domain to `dependent-media-audio-playlist-for-beaver-builder`.
 * Fixes a CSS-injection issue in the per-instance frontend styles: color values from the Beaver Builder color picker are now passed through a strict allowlist sanitizer (`dm_audio_playlist_sanitize_color`) that accepts only valid `#hex`, `hex`, `rgb()`, and `rgba()` patterns; everything else falls back to the per-field default.
 * Removes the duplicate inline `<style>` block that was being emitted from `frontend.php` in addition to the framework-rendered `frontend.css.php`. Styles are now rendered through a single source.
 * Refactors the Beaver Builder editor's media-picker injection script: the inline `<script>` previously echoed into `wp_footer` is now an enqueued JavaScript file (`js/editor.js`) loaded only when the BB editor is active and the user has `edit_posts`.
-* Adds the GPLv2 `License`, `License URI`, `Requires at least`, `Requires PHP`, and `Requires Plugins` plugin headers required by the WordPress.org Plugin Directory.
+* Adds the GPLv2 `License`, `License URI`, `Requires at least`, and `Requires PHP` plugin headers required by the WordPress.org Plugin Directory.
 * Backwards-compatibility shim for sites that ran the prior internal 1.x "BB MP3 Player" builds: the `BBMp3PlayerModule` PHP class is registered as an alias of `DM_Audio_Playlist_Module`, and both the module and its track settings form are registered under their old and new names. Existing Beaver Builder layouts that reference the old class continue to render after upgrade with all settings preserved (track URLs, titles, artwork, colors, volume, autoplay).
+* Drops the `Requires Plugins: beaver-builder-lite-version` header. Beaver Builder Pro has a different slug than Beaver Builder Lite, so that header would block users on Pro from activating the plugin even though Pro fully satisfies the actual dependency. The plugin still checks for `FLBuilder` at runtime and shows an admin notice if neither Lite nor Pro is active.
 
 == Upgrade Notice ==
 
-= 2.0.1 =
-First public WordPress.org release. If you were running a prior internal 1.x "BB MP3 Player" build, your existing module instances and their settings will continue to work after upgrade — no manual migration needed.
+= 2.0.2 =
+First public WordPress.org release. If you were running a prior internal 1.x "BB MP3 Player" build, your existing module instances and their settings will continue to work after upgrade — no manual migration needed. Works with both Beaver Builder Lite and Beaver Builder Pro.

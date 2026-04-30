@@ -3,10 +3,9 @@
  * Plugin Name:       Dependent Media Audio Playlist for Beaver Builder
  * Plugin URI:        https://github.com/Dependent-Media/dm-audio-playlist
  * Description:       A Beaver Builder module that adds a customizable audio playlist player with shuffle, repeat, artwork, and full playback controls. Tracks live in your Media Library; nothing is sent to any external service.
- * Version:           2.0.1
+ * Version:           2.0.2
  * Requires at least: 6.2
  * Requires PHP:      7.4
- * Requires Plugins:  beaver-builder-lite-version
  * Author:            Dependent Media
  * Author URI:        https://dependentmedia.com
  * License:           GPL v2 or later
@@ -19,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DM_AUDIO_PLAYLIST_VERSION', '2.0.1' );
+define( 'DM_AUDIO_PLAYLIST_VERSION', '2.0.2' );
 define( 'DM_AUDIO_PLAYLIST_FILE', __FILE__ );
 define( 'DM_AUDIO_PLAYLIST_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DM_AUDIO_PLAYLIST_URL', plugin_dir_url( __FILE__ ) );
