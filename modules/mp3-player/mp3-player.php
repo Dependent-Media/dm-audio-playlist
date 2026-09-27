@@ -106,46 +106,187 @@ $dmap_module_config = array(
 	'style'   => array(
 		'title'    => __( 'Style', 'dependent-media-audio-playlist-for-beaver-builder' ),
 		'sections' => array(
-			'colors'     => array(
-				'title'  => __( 'Colors', 'dependent-media-audio-playlist-for-beaver-builder' ),
+			'colors' => array(
+				'title'  => __( 'Base Colors', 'dependent-media-audio-playlist-for-beaver-builder' ),
 				'fields' => array(
-					'bg_color'          => array(
+					'bg_color' => array(
 						'type'       => 'color',
 						'label'      => __( 'Background Color', 'dependent-media-audio-playlist-for-beaver-builder' ),
 						'default'    => '1a1a2e',
 						'show_reset' => true,
 						'show_alpha' => true,
 					),
-					'text_color'        => array(
+					'text_color' => array(
 						'type'       => 'color',
 						'label'      => __( 'Text Color', 'dependent-media-audio-playlist-for-beaver-builder' ),
 						'default'    => 'ffffff',
 						'show_reset' => true,
+						'help'       => __( 'Default for all text and icons. The options in the sections below override it for individual parts.', 'dependent-media-audio-playlist-for-beaver-builder' ),
 					),
-					'accent_color'      => array(
+					'accent_color' => array(
 						'type'       => 'color',
 						'label'      => __( 'Accent Color', 'dependent-media-audio-playlist-for-beaver-builder' ),
 						'default'    => 'e94560',
 						'show_reset' => true,
+						'help'       => __( 'Default for the play button, progress fill, active track, and shuffle/repeat when on. The options in the sections below override it for individual parts.', 'dependent-media-audio-playlist-for-beaver-builder' ),
 					),
-					'play_icon_color'   => array(
+				),
+			),
+			'colors_now_playing' => array(
+				'title'  => __( 'Now Playing Colors', 'dependent-media-audio-playlist-for-beaver-builder' ),
+				'fields' => array(
+					'title_color' => array(
 						'type'       => 'color',
-						'label'      => __( 'Play Icon Color', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'label'      => __( 'Song Title', 'dependent-media-audio-playlist-for-beaver-builder' ),
 						'default'    => '',
 						'show_reset' => true,
-						'help'       => __( 'Color of the play/pause icon on the accent-colored button. Leave blank to pick automatically: white on a dark accent, the background color (or near-black) on a light one.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'help'       => __( 'The large title of the current song. Leave blank to use the Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'artist_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Artist Name', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank for a faded Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+				),
+			),
+			'colors_controls' => array(
+				'title'  => __( 'Button Colors', 'dependent-media-audio-playlist-for-beaver-builder' ),
+				'fields' => array(
+					'play_bg_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Play Button Circle', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'show_alpha' => true,
+						'help'       => __( 'Leave blank to use the Accent Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'play_icon_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Play / Pause Icon', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Color of the play triangle and pause bars. Leave blank to pick automatically: white on a dark button, the background color (or near-black) on a light one.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'control_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Other Buttons', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Shuffle, previous, next and repeat. Leave blank to use the Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'control_hover_bg_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Button Hover Circle', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'show_alpha' => true,
+						'help'       => __( 'The faint circle behind a button when the mouse is over it. Leave blank for a light tint.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'control_active_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Shuffle / Repeat When On', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank to use the Accent Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+				),
+			),
+			'colors_progress' => array(
+				'title'  => __( 'Progress & Volume Colors', 'dependent-media-audio-playlist-for-beaver-builder' ),
+				'fields' => array(
+					'time_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Time Numbers', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'The elapsed and total time. Leave blank to use the Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
 					),
 					'progress_bg_color' => array(
 						'type'       => 'color',
 						'label'      => __( 'Progress Bar Background', 'dependent-media-audio-playlist-for-beaver-builder' ),
 						'default'    => '333333',
 						'show_reset' => true,
+						'show_alpha' => true,
+						'help'       => __( 'Also the default for the volume bar, scrollbar and empty artwork boxes.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'progress_fill_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Progress Bar Fill', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank to use the Accent Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'volume_icon_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Volume Icon', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank to use the Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'volume_track_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Volume Bar', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'show_alpha' => true,
+						'help'       => __( 'Leave blank to use the Progress Bar Background.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'volume_thumb_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Volume Knob', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank to use the Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+				),
+			),
+			'colors_tracklist' => array(
+				'title'  => __( 'Track List Colors', 'dependent-media-audio-playlist-for-beaver-builder' ),
+				'fields' => array(
+					'track_text_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Song Names', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank to use the Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'track_meta_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Track Numbers & Artists', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank for a faded Text Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
 					),
 					'track_hover_color' => array(
 						'type'       => 'color',
-						'label'      => __( 'Track Hover Color', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'label'      => __( 'Row Hover Background', 'dependent-media-audio-playlist-for-beaver-builder' ),
 						'default'    => '16213e',
 						'show_reset' => true,
+						'show_alpha' => true,
+					),
+					'active_track_bg_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Playing Row Background', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'show_alpha' => true,
+						'help'       => __( 'Leave blank to use the Row Hover Background.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'active_track_text_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Playing Row Text', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank to use the Accent Color.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+					'scrollbar_color' => array(
+						'type'       => 'color',
+						'label'      => __( 'Scrollbar', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Leave blank to use the Progress Bar Background.', 'dependent-media-audio-playlist-for-beaver-builder' ),
 					),
 				),
 			),

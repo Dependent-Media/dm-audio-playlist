@@ -130,6 +130,7 @@
 .dmap-player .dmap-track-title {
 	font-size: 18px;
 	font-weight: 600;
+	color: var(--dmap-title, inherit);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -137,7 +138,8 @@
 
 .dmap-player .dmap-track-artist {
 	font-size: 13px;
-	opacity: 0.7;
+	color: var(--dmap-artist, inherit);
+	opacity: var(--dmap-artist-op, 0.7);
 	margin-top: 4px;
 }
 
@@ -152,7 +154,7 @@
 .dmap-player .dmap-btn {
 	background: none;
 	border: none;
-	color: var(--dmap-text);
+	color: var(--dmap-ctrl, var(--dmap-text));
 	cursor: pointer;
 	padding: 8px;
 	border-radius: 50%;
@@ -165,21 +167,22 @@
 }
 
 .dmap-player .dmap-btn:hover {
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--dmap-ctrl-hover, rgba(255, 255, 255, 0.1));
 }
 
 .dmap-player .dmap-btn.active {
-	color: var(--dmap-accent);
+	color: var(--dmap-ctrl-active, var(--dmap-accent));
 }
 
 .dmap-player .dmap-play {
-	background: var(--dmap-accent);
+	background: var(--dmap-play-bg, var(--dmap-accent));
 	width: 48px;
 	height: 48px;
 	color: var(--dmap-play-icon);
 }
 
 .dmap-player .dmap-play:hover {
+	background: var(--dmap-play-bg, var(--dmap-accent));
 	opacity: 0.85;
 }
 
@@ -189,7 +192,7 @@
 	right: 2px;
 	font-size: 9px;
 	font-weight: bold;
-	color: var(--dmap-accent);
+	color: var(--dmap-ctrl-active, var(--dmap-accent));
 }
 
 .dmap-player .dmap-progress-wrap {
@@ -199,6 +202,7 @@
 	padding: 8px 0;
 	font-size: 12px;
 	font-variant-numeric: tabular-nums;
+	color: var(--dmap-time, inherit);
 }
 
 .dmap-player .dmap-progress-bar {
@@ -214,7 +218,7 @@
 .dmap-player .dmap-progress-fill {
 	height: 100%;
 	width: 0%;
-	background: var(--dmap-accent);
+	background: var(--dmap-prog-fill, var(--dmap-accent));
 	border-radius: 3px;
 	transition: width 0.1s linear;
 }
@@ -231,12 +235,16 @@
 	opacity: 1;
 }
 
+.dmap-player .dmap-volume-icon {
+	color: var(--dmap-vol-icon, inherit);
+}
+
 .dmap-player .dmap-volume {
 	-webkit-appearance: none;
 	appearance: none;
 	width: 100px;
 	height: 4px;
-	background: var(--dmap-prog-bg);
+	background: var(--dmap-vol-track, var(--dmap-prog-bg));
 	border-radius: 2px;
 	outline: none;
 	cursor: pointer;
@@ -246,7 +254,7 @@
 	-webkit-appearance: none;
 	width: 14px;
 	height: 14px;
-	background: var(--dmap-text);
+	background: var(--dmap-vol-thumb, var(--dmap-text));
 	border-radius: 50%;
 	cursor: pointer;
 }
@@ -254,7 +262,7 @@
 .dmap-player .dmap-volume::-moz-range-thumb {
 	width: 14px;
 	height: 14px;
-	background: var(--dmap-text);
+	background: var(--dmap-vol-thumb, var(--dmap-text));
 	border-radius: 50%;
 	cursor: pointer;
 	border: none;
@@ -276,6 +284,7 @@
 	cursor: pointer;
 	border-radius: 4px;
 	transition: background 0.15s;
+	color: var(--dmap-track-text, inherit);
 }
 
 .dmap-player .dmap-track:hover {
@@ -283,8 +292,8 @@
 }
 
 .dmap-player .dmap-track.active {
-	background: var(--dmap-hover);
-	color: var(--dmap-accent);
+	background: var(--dmap-active-bg, var(--dmap-hover));
+	color: var(--dmap-active-text, var(--dmap-accent));
 }
 
 .dmap-player .dmap-track-thumb {
@@ -309,7 +318,8 @@
 
 .dmap-player .dmap-track-num {
 	font-size: 12px;
-	opacity: 0.5;
+	color: var(--dmap-track-meta, inherit);
+	opacity: var(--dmap-track-meta-op, 0.5);
 	min-width: 20px;
 	text-align: right;
 }
@@ -330,7 +340,7 @@
 	display: inline-flex;
 	min-width: 20px;
 	justify-content: center;
-	color: var(--dmap-accent);
+	color: var(--dmap-active-text, var(--dmap-accent));
 }
 
 .dmap-player .dmap-track-details {
@@ -348,7 +358,8 @@
 
 .dmap-player .dmap-track-artist-name {
 	font-size: 12px;
-	opacity: 0.5;
+	color: var(--dmap-track-meta, inherit);
+	opacity: var(--dmap-track-meta-op, 0.5);
 	display: block;
 }
 
@@ -361,7 +372,7 @@
 }
 
 .dmap-player .dmap-tracklist::-webkit-scrollbar-thumb {
-	background: var(--dmap-prog-bg);
+	background: var(--dmap-scrollbar, var(--dmap-prog-bg));
 	border-radius: 3px;
 }
 

@@ -29,27 +29,65 @@ $accent  = dm_audio_playlist_sanitize_color( $settings->accent_color      ?? '',
 $prog_bg = dm_audio_playlist_sanitize_color( $settings->progress_bg_color ?? '', '#333333' );
 $hover   = dm_audio_playlist_sanitize_color( $settings->track_hover_color ?? '', '#16213e' );
 
+// Play button circle: its own setting, else the accent.
+$play_bg = ! empty( $settings->play_bg_color )
+	? dm_audio_playlist_sanitize_color( $settings->play_bg_color, $accent )
+	: $accent;
+
 // Play/pause icon: an explicit setting wins; left blank, it's derived from the
-// accent so a light accent (e.g. white) doesn't swallow the white icon.
+// circle color so a light circle (e.g. white) doesn't swallow the white icon.
 $play_icon = ! empty( $settings->play_icon_color )
 	? dm_audio_playlist_sanitize_color( $settings->play_icon_color, '#ffffff' )
-	: dm_audio_playlist_play_icon_color( $accent, $bg );
+	: dm_audio_playlist_play_icon_color( $play_bg, $bg );
 
 // Dimension values are integer-bounded, then suffixed with the relevant unit.
 $radius = ! empty( $settings->border_radius ) ? absint( $settings->border_radius ) . 'px' : '8px';
 $max_w  = ! empty( $settings->max_width )     ? absint( $settings->max_width ) . 'px'     : '600px';
 
 $style_vars = sprintf(
-	'--dmap-bg:%s;--dmap-text:%s;--dmap-accent:%s;--dmap-play-icon:%s;--dmap-prog-bg:%s;--dmap-hover:%s;--dmap-radius:%s;--dmap-max-w:%s;',
+	'--dmap-bg:%s;--dmap-text:%s;--dmap-accent:%s;--dmap-play-bg:%s;--dmap-play-icon:%s;--dmap-prog-bg:%s;--dmap-hover:%s;--dmap-radius:%s;--dmap-max-w:%s;',
 	$bg,
 	$text,
 	$accent,
+	$play_bg,
 	$play_icon,
 	$prog_bg,
 	$hover,
 	$radius,
 	$max_w
 );
+
+// Optional per-part colors. Only the ones that are set get emitted; the CSS
+// falls back to the base colors for the rest, so layouts saved before these
+// settings existed render exactly as before. "Faded" parts (artist, track
+// numbers) drop their opacity once given an explicit color.
+$part_colors = array(
+	'title_color'             => array( '--dmap-title' ),
+	'artist_color'            => array( '--dmap-artist', '--dmap-artist-op' ),
+	'control_color'           => array( '--dmap-ctrl' ),
+	'control_hover_bg_color'  => array( '--dmap-ctrl-hover' ),
+	'control_active_color'    => array( '--dmap-ctrl-active' ),
+	'time_color'              => array( '--dmap-time' ),
+	'progress_fill_color'     => array( '--dmap-prog-fill' ),
+	'volume_icon_color'       => array( '--dmap-vol-icon' ),
+	'volume_track_color'      => array( '--dmap-vol-track' ),
+	'volume_thumb_color'      => array( '--dmap-vol-thumb' ),
+	'track_text_color'        => array( '--dmap-track-text' ),
+	'track_meta_color'        => array( '--dmap-track-meta', '--dmap-track-meta-op' ),
+	'active_track_bg_color'   => array( '--dmap-active-bg' ),
+	'active_track_text_color' => array( '--dmap-active-text' ),
+	'scrollbar_color'         => array( '--dmap-scrollbar' ),
+);
+foreach ( $part_colors as $key => $vars ) {
+	$val = dm_audio_playlist_sanitize_color( $settings->$key ?? '', '' );
+	if ( '' === $val ) {
+		continue;
+	}
+	$style_vars .= $vars[0] . ':' . $val . ';';
+	if ( isset( $vars[1] ) ) {
+		$style_vars .= $vars[1] . ':1;';
+	}
+}
 
 $init_vol = isset( $settings->initial_volume ) && $settings->initial_volume !== '' ? absint( $settings->initial_volume ) : 80;
 $init_vol = min( 100, max( 0, $init_vol ) );
@@ -146,7 +184,7 @@ foreach ( $tracks as $track ) {
 	</div>
 
 	<div class="dmap-volume-wrap">
-		<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+		<svg class="dmap-volume-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 			<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
 		</svg>
 		<input type="range" class="dmap-volume" min="0" max="1" step="0.05" value="<?php echo esc_attr( $init_vol / 100 ); ?>" aria-label="<?php esc_attr_e( 'Volume', 'dependent-media-audio-playlist-for-beaver-builder' ); ?>">

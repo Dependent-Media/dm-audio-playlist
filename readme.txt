@@ -4,7 +4,7 @@ Tags: beaver-builder, audio, playlist, mp3, music
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.1.2
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ This plugin is **not affiliated with or endorsed by Beaver Builder**. "Beaver Bu
 * Volume slider with configurable initial volume
 * Optional autoplay (browser-permitting)
 * Click the now-playing artwork to open it full size in a lightbox
-* Per-instance color customization: background, text, accent, progress bar, hover highlight
+* Per-instance color customization for every part of the player: background, text and accent as base colors, plus optional colors for the song title, artist, play button circle and icon, the other buttons, shuffle/repeat when on, time, progress bar, volume icon/bar/knob, song names, track numbers, row hover, the playing row, and the scrollbar
 * Border radius and max-width controls
 * Native HTML5 audio — no external libraries, no third-party services
 * Works with whatever audio formats the visitor's browser supports (MP3, AAC, OGG, WAV)
@@ -84,6 +84,12 @@ Open an issue at the GitHub repository: [https://github.com/Dependent-Media/dm-a
 
 == Changelog ==
 
+= 2.2.0 =
+* Every part of the player can now be given its own color from the Style tab, with no custom CSS. The colors are split into sections: **Base Colors** (background, text, accent), **Now Playing Colors** (song title, artist), **Button Colors** (play button circle, play/pause icon, other buttons, button hover circle, shuffle/repeat when on), **Progress & Volume Colors** (time, progress bar background and fill, volume icon, bar and knob), and **Track List Colors** (song names, track numbers and artists, row hover, playing row background and text, scrollbar).
+* All the new options are blank by default and fall back to the base colors, so existing players look exactly the same after the update.
+* The automatic play/pause icon color now follows the play button circle color when one is set.
+* Fixes the play button's circle fading to a faint tint on hover. The generic button hover rule outranked the play button's own background.
+
 = 2.1.2 =
 * Fixes the play/pause icon disappearing when a light Accent Color (e.g. white) is chosen. The icon was hard-coded white on the accent-colored button; it now switches automatically to the player background color — or near-black if the background is light too — whenever the accent is light.
 * New **Style → Colors → Play Icon Color** setting to choose the icon color yourself. Leave it blank for the automatic choice.
@@ -112,6 +118,9 @@ Open an issue at the GitHub repository: [https://github.com/Dependent-Media/dm-a
 * Drops the `Requires Plugins: beaver-builder-lite-version` header. Beaver Builder Pro has a different slug than Beaver Builder Lite, so that header would block users on Pro from activating the plugin even though Pro fully satisfies the actual dependency. The plugin still checks for `FLBuilder` at runtime and shows an admin notice if neither Lite nor Pro is active.
 
 == Upgrade Notice ==
+
+= 2.2.0 =
+Adds a color option for every part of the player under the Style tab. Existing players look the same until you change them.
 
 = 2.1.2 =
 The play/pause icon stays visible on light accent colors. Optional new Play Icon Color setting.
