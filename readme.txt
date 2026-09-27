@@ -4,7 +4,7 @@ Tags: beaver-builder, audio, playlist, mp3, music
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,6 +84,10 @@ Open an issue at the GitHub repository: [https://github.com/Dependent-Media/dm-a
 
 == Changelog ==
 
+= 2.1.2 =
+* Fixes the play/pause icon disappearing when a light Accent Color (e.g. white) is chosen. The icon was hard-coded white on the accent-colored button; it now switches automatically to the player background color — or near-black if the background is light too — whenever the accent is light.
+* New **Style → Colors → Play Icon Color** setting to choose the icon color yourself. Leave it blank for the automatic choice.
+
 = 2.1.1 =
 * Fixes the lightbox close button drifting out of the top-right corner. Themes commonly restyle bare `button:hover` / `:focus` / `:active` — the Beaver Builder theme skin sets a blue background, a border, and `position: relative` on those states — and `button:focus` (specificity 0,1,1) outranked the plugin's lone `.dmap-lightbox-close` class (0,1,0). Because the script focuses the close button when the lightbox opens, it immediately picked up `position: relative` and moved into the centered flex column above the artwork, only snapping back to the corner once it lost focus on the way out. All lightbox rules are now scoped one level deeper (`.dmap-lightbox .dmap-lightbox-close`), and the close button restates its position, border, and colors for the hover, focus, and active states.
 
@@ -108,6 +112,9 @@ Open an issue at the GitHub repository: [https://github.com/Dependent-Media/dm-a
 * Drops the `Requires Plugins: beaver-builder-lite-version` header. Beaver Builder Pro has a different slug than Beaver Builder Lite, so that header would block users on Pro from activating the plugin even though Pro fully satisfies the actual dependency. The plugin still checks for `FLBuilder` at runtime and shows an admin notice if neither Lite nor Pro is active.
 
 == Upgrade Notice ==
+
+= 2.1.2 =
+The play/pause icon stays visible on light accent colors. Optional new Play Icon Color setting.
 
 = 2.1.1 =
 Fixes the lightbox close button sitting above the artwork instead of in the top-right corner on themes that restyle `button:focus` (including the Beaver Builder theme).

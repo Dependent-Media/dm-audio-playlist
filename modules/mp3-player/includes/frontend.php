@@ -29,15 +29,22 @@ $accent  = dm_audio_playlist_sanitize_color( $settings->accent_color      ?? '',
 $prog_bg = dm_audio_playlist_sanitize_color( $settings->progress_bg_color ?? '', '#333333' );
 $hover   = dm_audio_playlist_sanitize_color( $settings->track_hover_color ?? '', '#16213e' );
 
+// Play/pause icon: an explicit setting wins; left blank, it's derived from the
+// accent so a light accent (e.g. white) doesn't swallow the white icon.
+$play_icon = ! empty( $settings->play_icon_color )
+	? dm_audio_playlist_sanitize_color( $settings->play_icon_color, '#ffffff' )
+	: dm_audio_playlist_play_icon_color( $accent, $bg );
+
 // Dimension values are integer-bounded, then suffixed with the relevant unit.
 $radius = ! empty( $settings->border_radius ) ? absint( $settings->border_radius ) . 'px' : '8px';
 $max_w  = ! empty( $settings->max_width )     ? absint( $settings->max_width ) . 'px'     : '600px';
 
 $style_vars = sprintf(
-	'--dmap-bg:%s;--dmap-text:%s;--dmap-accent:%s;--dmap-prog-bg:%s;--dmap-hover:%s;--dmap-radius:%s;--dmap-max-w:%s;',
+	'--dmap-bg:%s;--dmap-text:%s;--dmap-accent:%s;--dmap-play-icon:%s;--dmap-prog-bg:%s;--dmap-hover:%s;--dmap-radius:%s;--dmap-max-w:%s;',
 	$bg,
 	$text,
 	$accent,
+	$play_icon,
 	$prog_bg,
 	$hover,
 	$radius,

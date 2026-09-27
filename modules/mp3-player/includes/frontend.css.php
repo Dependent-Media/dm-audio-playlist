@@ -12,6 +12,7 @@
 	--dmap-bg: #1a1a2e;
 	--dmap-text: #ffffff;
 	--dmap-accent: #e94560;
+	--dmap-play-icon: #ffffff;
 	--dmap-prog-bg: #333333;
 	--dmap-hover: #16213e;
 	--dmap-radius: 8px;
@@ -175,7 +176,7 @@
 	background: var(--dmap-accent);
 	width: 48px;
 	height: 48px;
-	color: #fff;
+	color: var(--dmap-play-icon);
 }
 
 .dmap-player .dmap-play:hover {

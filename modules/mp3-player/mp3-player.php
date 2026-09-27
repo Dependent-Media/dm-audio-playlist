@@ -128,6 +128,13 @@ $dmap_module_config = array(
 						'default'    => 'e94560',
 						'show_reset' => true,
 					),
+					'play_icon_color'   => array(
+						'type'       => 'color',
+						'label'      => __( 'Play Icon Color', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default'    => '',
+						'show_reset' => true,
+						'help'       => __( 'Color of the play/pause icon on the accent-colored button. Leave blank to pick automatically: white on a dark accent, the background color (or near-black) on a light one.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
 					'progress_bg_color' => array(
 						'type'       => 'color',
 						'label'      => __( 'Progress Bar Background', 'dependent-media-audio-playlist-for-beaver-builder' ),
