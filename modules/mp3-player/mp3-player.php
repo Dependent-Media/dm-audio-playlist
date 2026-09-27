@@ -86,6 +86,21 @@ $dmap_module_config = array(
 					),
 				),
 			),
+			'artwork'  => array(
+				'title'  => __( 'Artwork', 'dependent-media-audio-playlist-for-beaver-builder' ),
+				'fields' => array(
+					'artwork_lightbox' => array(
+						'type'    => 'select',
+						'label'   => __( 'Click Artwork to Enlarge', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						'default' => 'yes',
+						'options' => array(
+							'yes' => __( 'On', 'dependent-media-audio-playlist-for-beaver-builder' ),
+							'no'  => __( 'Off', 'dependent-media-audio-playlist-for-beaver-builder' ),
+						),
+						'help'    => __( 'When on, clicking the now-playing artwork opens it full size in a lightbox. Tracks with no artwork stay non-clickable.', 'dependent-media-audio-playlist-for-beaver-builder' ),
+					),
+				),
+			),
 		),
 	),
 	'style'   => array(

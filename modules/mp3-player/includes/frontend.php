@@ -48,6 +48,10 @@ $init_vol = isset( $settings->initial_volume ) && $settings->initial_volume !== 
 $init_vol = min( 100, max( 0, $init_vol ) );
 $autoplay = ( isset( $settings->autoplay ) && $settings->autoplay === 'yes' ) ? 'true' : 'false';
 
+// Artwork lightbox defaults to on, including for layouts saved before the
+// setting existed — those have no artwork_lightbox key at all.
+$lightbox_on = ! isset( $settings->artwork_lightbox ) || $settings->artwork_lightbox !== 'no';
+
 // Show the artwork column only if at least one track has artwork.
 $has_any_art = false;
 foreach ( $tracks as $track ) {
@@ -61,12 +65,30 @@ foreach ( $tracks as $track ) {
 	id="<?php echo esc_attr( $player_id ); ?>"
 	style="<?php echo esc_attr( $style_vars ); ?>"
 	data-initial-volume="<?php echo esc_attr( $init_vol ); ?>"
-	data-autoplay="<?php echo esc_attr( $autoplay ); ?>">
+	data-autoplay="<?php echo esc_attr( $autoplay ); ?>"
+	data-lightbox="<?php echo $lightbox_on ? 'true' : 'false'; ?>">
 
 	<div class="dmap-now-playing">
-		<div class="dmap-artwork-placeholder dmap-now-art-wrap">
-			<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-		</div>
+		<?php if ( $lightbox_on ) : ?>
+			<?php
+			/*
+			 * A real <button> so the artwork is keyboard-reachable and announced
+			 * as actionable. It ships disabled — nothing is loaded yet, so the
+			 * placeholder is showing — and the script enables it whenever the
+			 * track it switches to actually has artwork.
+			 */
+			?>
+			<button type="button"
+				class="dmap-artwork-placeholder dmap-now-art-wrap"
+				aria-label="<?php esc_attr_e( 'View larger artwork', 'dependent-media-audio-playlist-for-beaver-builder' ); ?>"
+				disabled>
+				<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+			</button>
+		<?php else : ?>
+			<div class="dmap-artwork-placeholder dmap-now-art-wrap">
+				<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+			</div>
+		<?php endif; ?>
 		<div class="dmap-track-info">
 			<div class="dmap-track-title">&mdash;</div>
 			<div class="dmap-track-artist"></div>
@@ -134,12 +156,16 @@ foreach ( $tracks as $track ) {
 			$title       = ! empty( $track->title )       ? $track->title       : sprintf( /* translators: %d: track number */ __( 'Track %d', 'dependent-media-audio-playlist-for-beaver-builder' ), $i + 1 );
 			$artist      = ! empty( $track->artist )      ? $track->artist      : '';
 			$artwork_url = ! empty( $track->artwork_url ) ? $track->artwork_url : '';
+			// The list/now-playing thumbnails keep whatever size was picked;
+			// the lightbox gets the original so enlarging it is worth doing.
+			$artwork_full = $artwork_url ? dm_audio_playlist_full_size_url( $artwork_url ) : '';
 			?>
 			<li class="dmap-track"
 				data-src="<?php echo esc_url( $audio_url ); ?>"
 				data-title="<?php echo esc_attr( $title ); ?>"
 				data-artist="<?php echo esc_attr( $artist ); ?>"
-				data-artwork="<?php echo esc_url( $artwork_url ); ?>">
+				data-artwork="<?php echo esc_url( $artwork_url ); ?>"
+				data-artwork-full="<?php echo esc_url( $artwork_full ); ?>">
 				<?php if ( $has_any_art ) : ?>
 					<?php if ( $artwork_url ) : ?>
 						<img class="dmap-track-thumb" src="<?php echo esc_url( $artwork_url ); ?>" alt="" loading="lazy">

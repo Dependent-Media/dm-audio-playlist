@@ -3,7 +3,7 @@
  * Plugin Name:       Dependent Media Audio Playlist for Beaver Builder
  * Plugin URI:        https://github.com/Dependent-Media/dm-audio-playlist
  * Description:       A Beaver Builder module that adds a customizable audio playlist player with shuffle, repeat, artwork, and full playback controls. Tracks live in your Media Library; nothing is sent to any external service.
- * Version:           2.0.2
+ * Version:           2.1.1
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            Dependent Media
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DM_AUDIO_PLAYLIST_VERSION', '2.0.2' );
+define( 'DM_AUDIO_PLAYLIST_VERSION', '2.1.1' );
 define( 'DM_AUDIO_PLAYLIST_FILE', __FILE__ );
 define( 'DM_AUDIO_PLAYLIST_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DM_AUDIO_PLAYLIST_URL', plugin_dir_url( __FILE__ ) );
@@ -105,4 +105,58 @@ function dm_audio_playlist_sanitize_color( $val, $default ) {
 	}
 
 	return $default;
+}
+
+/**
+ * Resolve an intermediate-size image URL back to its original upload.
+ *
+ * The artwork field stores whatever URL the media picker handed back, which is
+ * often a resized copy ("cover-300x300.jpg"). That's the right size for the
+ * 80px thumbnail but far too small for the lightbox, so we strip WordPress's
+ * "-<width>x<height>" size suffix to recover the original.
+ *
+ * Deliberately conservative — the rewritten URL is only returned when:
+ *   - the URL is inside this site's uploads directory (we can't reason about
+ *     the naming scheme of an arbitrary remote host), and
+ *   - the un-suffixed file actually exists on disk, since a user is perfectly
+ *     free to upload a file genuinely named "cover-300x300.jpg".
+ * Anything else falls through to the original URL untouched.
+ *
+ * "-scaled" images are intentionally left alone: that variant _is_ the version
+ * WordPress serves, and the true original behind it can be enormous.
+ *
+ * @param string $url Artwork URL as stored in the module settings.
+ * @return string Full-size URL when one can be resolved, otherwise $url.
+ */
+function dm_audio_playlist_full_size_url( $url ) {
+	if ( ! is_string( $url ) || '' === $url ) {
+		return '';
+	}
+
+	$uploads = wp_get_upload_dir();
+	if ( empty( $uploads['baseurl'] ) || empty( $uploads['basedir'] ) ) {
+		return $url;
+	}
+
+	// Compare scheme-agnostically; stored URLs predate any http->https move.
+	$base_rel = preg_replace( '#^https?:#i', '', $uploads['baseurl'] );
+	$url_rel  = preg_replace( '#^https?:#i', '', $url );
+	if ( 0 !== strpos( $url_rel, $base_rel ) ) {
+		return $url;
+	}
+
+	$full_rel = preg_replace( '/-\d+x\d+(\.[a-zA-Z0-9]+)$/', '$1', $url_rel );
+	if ( null === $full_rel || $full_rel === $url_rel ) {
+		return $url;
+	}
+
+	$path = $uploads['basedir'] . substr( $full_rel, strlen( $base_rel ) );
+	if ( ! file_exists( $path ) ) {
+		return $url;
+	}
+
+	// Rebuild on the original URL's scheme rather than the uploads baseurl's.
+	$scheme = ( 0 === strpos( $url, 'https:' ) ) ? 'https:' : ( ( 0 === strpos( $url, 'http:' ) ) ? 'http:' : '' );
+
+	return $scheme . $full_rel;
 }

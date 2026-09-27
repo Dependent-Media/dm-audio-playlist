@@ -31,14 +31,152 @@
 
 	trackEls.forEach(function (el) {
 		tracks.push({
-			src:     el.getAttribute('data-src'),
-			title:   el.getAttribute('data-title'),
-			artist:  el.getAttribute('data-artist'),
-			artwork: el.getAttribute('data-artwork')
+			src:         el.getAttribute('data-src'),
+			title:       el.getAttribute('data-title'),
+			artist:      el.getAttribute('data-artist'),
+			artwork:     el.getAttribute('data-artwork'),
+			artworkFull: el.getAttribute('data-artwork-full')
 		});
 	});
 
 	if (tracks.length === 0) return;
+
+	/* ---------------------------------------------------------------
+	 * Artwork lightbox
+	 * ------------------------------------------------------------- */
+
+	var lightboxOn    = wrapper.getAttribute('data-lightbox') === 'true';
+	var lb            = null;
+	var lbImg, lbTitle, lbArtist, lbClose;
+	var lbReturnFocus = null;
+	var htmlOverflow  = '';
+	var bodyOverflow  = '';
+
+	function buildLightbox() {
+		lb = document.createElement('div');
+		lb.className = 'dmap-lightbox';
+		lb.setAttribute('role', 'dialog');
+		lb.setAttribute('aria-modal', 'true');
+		lb.setAttribute('aria-label', '<?php echo esc_js( __( 'Track artwork', 'dependent-media-audio-playlist-for-beaver-builder' ) ); ?>');
+		lb.hidden = true;
+
+		lbClose = document.createElement('button');
+		lbClose.type = 'button';
+		lbClose.className = 'dmap-lightbox-close';
+		lbClose.setAttribute('aria-label', '<?php echo esc_js( __( 'Close', 'dependent-media-audio-playlist-for-beaver-builder' ) ); ?>');
+		lbClose.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+		var fig = document.createElement('figure');
+		fig.className = 'dmap-lightbox-figure';
+
+		lbImg = document.createElement('img');
+		lbImg.className = 'dmap-lightbox-img';
+		lbImg.alt = '';
+
+		var cap = document.createElement('figcaption');
+		cap.className = 'dmap-lightbox-caption';
+
+		lbTitle = document.createElement('span');
+		lbTitle.className = 'dmap-lightbox-title';
+		lbArtist = document.createElement('span');
+		lbArtist.className = 'dmap-lightbox-artist';
+
+		cap.appendChild(lbTitle);
+		cap.appendChild(lbArtist);
+		fig.appendChild(lbImg);
+		fig.appendChild(cap);
+		lb.appendChild(lbClose);
+		lb.appendChild(fig);
+
+		// Body-level so builder rows with overflow/transform can't clip it.
+		document.body.appendChild(lb);
+
+		lbClose.addEventListener('click', closeLightbox);
+		lb.addEventListener('click', function (e) {
+			// Backdrop only — clicking the artwork itself shouldn't dismiss it.
+			if (e.target === lb) closeLightbox();
+		});
+	}
+
+	// Keeps an open lightbox in step when playback rolls to the next track.
+	function syncLightbox() {
+		if (!lb || current === -1) return;
+		var t = tracks[current];
+		if (!t || !t.artwork) return;
+
+		var src = t.artworkFull || t.artwork;
+		if (lbImg.getAttribute('src') !== src) lbImg.setAttribute('src', src);
+		lbImg.alt = t.title
+			? '<?php echo esc_js( __( 'Artwork for %s', 'dependent-media-audio-playlist-for-beaver-builder' ) ); ?>'.replace('%s', t.title)
+			: '';
+		lbTitle.textContent = t.title || '';
+		lbArtist.textContent = t.artist || '';
+	}
+
+	function openLightbox() {
+		if (!lightboxOn || current === -1) return;
+		if (!tracks[current] || !tracks[current].artwork) return;
+
+		if (!lb) buildLightbox();
+		syncLightbox();
+
+		lbReturnFocus = document.activeElement;
+
+		htmlOverflow = document.documentElement.style.overflow;
+		bodyOverflow = document.body.style.overflow;
+		document.documentElement.style.overflow = 'hidden';
+		document.body.style.overflow = 'hidden';
+
+		lb.hidden = false;
+		void lb.offsetWidth; // Flush layout so the fade-in starts from 0.
+		lb.classList.add('is-open');
+
+		document.addEventListener('keydown', onLightboxKeydown, true);
+		lbClose.focus();
+	}
+
+	function closeLightbox() {
+		if (!lb || lb.hidden) return;
+
+		lb.classList.remove('is-open');
+		document.removeEventListener('keydown', onLightboxKeydown, true);
+		document.documentElement.style.overflow = htmlOverflow;
+		document.body.style.overflow = bodyOverflow;
+
+		var finish = function (e) {
+			if (e && e.target !== lb) return;      // Ignore descendants' transitions.
+			if (lb.classList.contains('is-open')) return; // Reopened mid-fade.
+			lb.hidden = true;
+			lb.removeEventListener('transitionend', finish);
+		};
+		lb.addEventListener('transitionend', finish);
+		setTimeout(function () { finish(); }, 300); // Fallback if no transition runs.
+
+		if (lbReturnFocus && typeof lbReturnFocus.focus === 'function') {
+			lbReturnFocus.focus();
+		}
+		lbReturnFocus = null;
+	}
+
+	function onLightboxKeydown(e) {
+		if (e.key === 'Escape' || e.key === 'Esc') {
+			e.preventDefault();
+			closeLightbox();
+			return;
+		}
+		// Close is the only focusable control in here, so trapping is trivial.
+		if (e.key === 'Tab') {
+			e.preventDefault();
+			lbClose.focus();
+		}
+	}
+
+	if (lightboxOn && nowArtWrap) {
+		nowArtWrap.addEventListener('click', function (e) {
+			e.preventDefault();
+			openLightbox();
+		});
+	}
 
 	function formatTime(s) {
 		if (isNaN(s)) return '0:00';
@@ -72,12 +210,23 @@
 			img.alt = '';
 			img.src = artwork;
 			nowArtWrap.appendChild(img);
-			nowArtWrap.className = 'dmap-now-art-wrap';
+			nowArtWrap.classList.remove('dmap-artwork-placeholder');
 		} else {
-			nowArtWrap.className = 'dmap-artwork-placeholder dmap-now-art-wrap';
+			nowArtWrap.classList.add('dmap-artwork-placeholder');
 			var temp = document.createElement('div');
 			temp.innerHTML = defaultArtSvg;
 			while (temp.firstChild) nowArtWrap.appendChild(temp.firstChild);
+		}
+
+		if (!lightboxOn) return;
+
+		// Only offer the zoom on tracks that actually have artwork.
+		if ('disabled' in nowArtWrap) nowArtWrap.disabled = !artwork;
+
+		if (artwork) {
+			syncLightbox();
+		} else {
+			closeLightbox();
 		}
 	}
 

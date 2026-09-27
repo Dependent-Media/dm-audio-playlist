@@ -47,6 +47,67 @@
 	background: var(--dmap-prog-bg);
 }
 
+/*
+ * The now-playing artwork container. Rendered as a <button> when the artwork
+ * lightbox is enabled, so this doubles as a button reset.
+ *
+ * Must stay ABOVE .dmap-artwork-placeholder: when no artwork is loaded both
+ * classes sit on the same element at equal specificity, and the placeholder's
+ * background/display need to win.
+ */
+.dmap-player .dmap-now-art-wrap {
+	position: relative;
+	display: block;
+	flex: 0 0 auto;
+	width: 80px;
+	height: 80px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: none;
+	overflow: hidden;
+	color: inherit;
+	font: inherit;
+	line-height: 0;
+}
+
+.dmap-player button.dmap-now-art-wrap:not([disabled]) {
+	cursor: zoom-in;
+}
+
+/*
+ * Hover/focus affordance. A pseudo-element rather than real markup because the
+ * script replaces this element's children wholesale on every track change.
+ */
+.dmap-player button.dmap-now-art-wrap::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border-radius: inherit;
+	background-color: rgba(0, 0, 0, 0.45);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cpolyline points='9 21 3 21 3 15'/%3E%3Cline x1='21' y1='3' x2='14' y2='10'/%3E%3Cline x1='3' y1='21' x2='10' y2='14'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 22px 22px;
+	opacity: 0;
+	transition: opacity 0.18s ease;
+	pointer-events: none;
+}
+
+.dmap-player button.dmap-now-art-wrap:not([disabled]):hover::after,
+.dmap-player button.dmap-now-art-wrap:not([disabled]):focus-visible::after {
+	opacity: 1;
+}
+
+.dmap-player button.dmap-now-art-wrap:focus-visible {
+	outline: 2px solid var(--dmap-accent);
+	outline-offset: 2px;
+}
+
 .dmap-player .dmap-artwork-placeholder {
 	width: 80px;
 	height: 80px;
@@ -301,4 +362,154 @@
 .dmap-player .dmap-tracklist::-webkit-scrollbar-thumb {
 	background: var(--dmap-prog-bg);
 	border-radius: 3px;
+}
+
+/*
+ * Artwork lightbox.
+ *
+ * Deliberately NOT scoped under .dmap-player: the script moves the overlay to
+ * <body> so a builder row with overflow:hidden, a transform, or its own
+ * stacking context can't clip it. It also stays visually neutral rather than
+ * inheriting the player's palette — a lightbox should read as a lightbox.
+ */
+.dmap-lightbox {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100000; /* Above the WP admin bar (99999). */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+	padding: 24px;
+	box-sizing: border-box;
+	background: rgba(0, 0, 0, 0.9);
+	cursor: zoom-out;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Beats the bare .dmap-lightbox display:flex on specificity. */
+.dmap-lightbox[hidden] {
+	display: none;
+}
+
+.dmap-lightbox.is-open {
+	opacity: 1;
+}
+
+.dmap-lightbox * {
+	box-sizing: border-box;
+}
+
+.dmap-lightbox .dmap-lightbox-figure {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+	margin: 0;
+	max-width: 100%;
+	cursor: default;
+}
+
+.dmap-lightbox .dmap-lightbox-img {
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 76vh;
+	border-radius: 8px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.dmap-lightbox .dmap-lightbox-caption {
+	color: #ffffff;
+	text-align: center;
+	line-height: 1.35;
+}
+
+.dmap-lightbox .dmap-lightbox-title {
+	display: block;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.dmap-lightbox .dmap-lightbox-artist {
+	display: block;
+	font-size: 14px;
+	opacity: 0.7;
+	margin-top: 4px;
+}
+
+.dmap-lightbox .dmap-lightbox-artist:empty {
+	display: none;
+}
+
+.dmap-lightbox .dmap-lightbox-close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	left: auto;
+	bottom: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+/*
+ * Themes routinely restyle bare `button:hover` / `:focus` / `:active`. The
+ * Beaver Builder theme skin, for one, sets a blue background, a border, and
+ * `position: relative` on those states — and `button:focus` (0,1,1) outranks a
+ * lone `.dmap-lightbox-close` (0,1,0). Since the script focuses this button
+ * when the lightbox opens, that dragged it out of the corner and into the flex
+ * column above the image for as long as it held focus. Restate the essentials
+ * per state, one level deeper, so no theme can move or recolor it.
+ */
+.dmap-lightbox .dmap-lightbox-close:hover,
+.dmap-lightbox .dmap-lightbox-close:focus,
+.dmap-lightbox .dmap-lightbox-close:active {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	left: auto;
+	bottom: auto;
+	border: 0;
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.dmap-lightbox .dmap-lightbox-close:focus-visible {
+	outline: 2px solid #ffffff;
+	outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+	.dmap-lightbox {
+		padding: 16px;
+	}
+
+	.dmap-lightbox .dmap-lightbox-img {
+		max-height: 68vh;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.dmap-lightbox,
+	.dmap-player button.dmap-now-art-wrap::after {
+		transition: none;
+	}
 }

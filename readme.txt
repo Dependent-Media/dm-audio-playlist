@@ -4,7 +4,7 @@ Tags: beaver-builder, audio, playlist, mp3, music
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.0.2
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ This plugin is **not affiliated with or endorsed by Beaver Builder**. "Beaver Bu
 * Scrubbable progress bar with current time and duration
 * Volume slider with configurable initial volume
 * Optional autoplay (browser-permitting)
+* Click the now-playing artwork to open it full size in a lightbox
 * Per-instance color customization: background, text, accent, progress bar, hover highlight
 * Border radius and max-width controls
 * Native HTML5 audio — no external libraries, no third-party services
@@ -83,6 +84,18 @@ Open an issue at the GitHub repository: [https://github.com/Dependent-Media/dm-a
 
 == Changelog ==
 
+= 2.1.1 =
+* Fixes the lightbox close button drifting out of the top-right corner. Themes commonly restyle bare `button:hover` / `:focus` / `:active` — the Beaver Builder theme skin sets a blue background, a border, and `position: relative` on those states — and `button:focus` (specificity 0,1,1) outranked the plugin's lone `.dmap-lightbox-close` class (0,1,0). Because the script focuses the close button when the lightbox opens, it immediately picked up `position: relative` and moved into the centered flex column above the artwork, only snapping back to the corner once it lost focus on the way out. All lightbox rules are now scoped one level deeper (`.dmap-lightbox .dmap-lightbox-close`), and the close button restates its position, border, and colors for the hover, focus, and active states.
+
+= 2.1.0 =
+* Adds an artwork lightbox: clicking the now-playing artwork opens it full size over a dimmed backdrop, with the track title and artist beneath it. Previously the artwork was purely decorative and clicking it did nothing.
+* The lightbox loads the *original* upload rather than the resized copy stored in the track settings. Artwork picked from the media library is frequently an intermediate size (e.g. `cover-300x300.jpg`), which is right for the 80px thumbnail but far too small to enlarge. The size suffix is stripped to recover the original, but only for URLs inside this site's uploads directory and only when that file actually exists on disk — otherwise the stored URL is used unchanged. `-scaled` images are left alone.
+* The lightbox image is only fetched when the lightbox is opened, so pages carry no extra weight up front.
+* Artwork is now a real `button` when the lightbox is enabled: keyboard focusable, activates with Enter/Space, closes with Escape, the backdrop, or the close button, and returns focus to the artwork afterwards. It is automatically disabled on tracks that have no artwork.
+* The overlay is appended to `body` so builder rows with `overflow: hidden`, a transform, or their own stacking context cannot clip it.
+* An open lightbox follows playback — when a track change swaps the artwork, the enlarged image and caption update with it, and it closes if the incoming track has no artwork.
+* New **Tracks → Artwork → Click Artwork to Enlarge** setting (default On) to turn the behavior off. Existing layouts saved before this release get the lightbox without needing to be re-saved.
+
 = 2.0.2 =
 * First public release on WordPress.org.
 * Renamed the plugin from "BB MP3 Player" to "Dependent Media Audio Playlist for Beaver Builder" to comply with WordPress.org Plugin Directory naming guidance (third-party plugins cannot use a brand name as a prefix in a way that implies official affiliation).
@@ -95,6 +108,12 @@ Open an issue at the GitHub repository: [https://github.com/Dependent-Media/dm-a
 * Drops the `Requires Plugins: beaver-builder-lite-version` header. Beaver Builder Pro has a different slug than Beaver Builder Lite, so that header would block users on Pro from activating the plugin even though Pro fully satisfies the actual dependency. The plugin still checks for `FLBuilder` at runtime and shows an admin notice if neither Lite nor Pro is active.
 
 == Upgrade Notice ==
+
+= 2.1.1 =
+Fixes the lightbox close button sitting above the artwork instead of in the top-right corner on themes that restyle `button:focus` (including the Beaver Builder theme).
+
+= 2.1.0 =
+Clicking the now-playing artwork now opens it full size in a lightbox. Existing players pick this up automatically — no need to re-save your layouts. Turn it off under Tracks → Artwork if you'd rather the artwork stayed decorative.
 
 = 2.0.2 =
 First public WordPress.org release. If you were running a prior internal 1.x "BB MP3 Player" build, your existing module instances and their settings will continue to work after upgrade — no manual migration needed. Works with both Beaver Builder Lite and Beaver Builder Pro.
